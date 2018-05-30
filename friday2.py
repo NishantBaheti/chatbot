@@ -12,7 +12,7 @@ import webbrowser as wb
 from bs4 import BeautifulSoup
 import requests
 r=sr.Recognizer()
-os.system("mpg321 sreply.mp3")
+
 directions=''' quick guide
 1.to greet with bot say hello or hey
 2.to run any linux command(try simple ones like-date)
@@ -96,7 +96,16 @@ while True:
 						tts.save('whichsong.mp3')
 						os.system("mpg321 whichsong.mp3")
 						audio1=r.listen(source)
-						try:
+						try: 
+							song=r.recognize_google(audio1)	
+							#l=glob.glob('*.mp3')
+							os.system("mpg321 "+song+".mp3")				
+						except Exception as e:
+							pass	
+	except Exception as e:
+		pass
+
+'''		try:
 							song=r.recognize_google(audio1)	
 							print("...")
 							v=requests.get("https://www.youtube.com/results?search_query="+str(song))
@@ -108,12 +117,4 @@ while True:
 									wb.get('firefox').open_new_tab(ss)
 									break
 						except Exception as e:
-							pass
-						'''try : another method to play songs, but using available songs on system
-							song=r.recognize_google(audio1)	
-							l=glob.glob('*.mp3')
-							os.system("mpg321 "+song+".mp3")				
-						except Exception as e:
-							pass '''
-	except Exception as e:
-		pass
+							pass'''
