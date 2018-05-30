@@ -11,6 +11,8 @@ import webbrowser as wb
 #importing beautifulsoup 
 from bs4 import BeautifulSoup
 import requests
+import pafy
+import vlc
 r=sr.Recognizer()
 
 directions=''' quick guide
@@ -19,7 +21,7 @@ directions=''' quick guide
 3.to search anything on google keyword search and value,default browser firefox
 4.to create directories try a sentence specifically containing keyword="directory"
 5.to play any song on youtube use any sentence specifically containing keywords='music' or 'song', default browser firefox
-'''
+6.to end the session say a line containing specifically the keywords=bye,tata,sayonara'''
 
 #primary message by bot
 reply="hello. The name is Friday. how can i help you"
@@ -39,19 +41,28 @@ while True:
 
 
 	try:
-		text=r.recognize_google(audio)  #recognizing the text from the variable
+		text=r.recognize_google(audio).lower() #recognizing the text from the variable
 		stext=text.split()   #splitting 
 		length=len(stext)			
-		
+		#print(text)
 		#to greet with bot say hello or hey
 		for i in range(0,length):
 			if(stext[i]=="hello" or stext[i]=="hey"):
 				reply="hello sir"
 				tts=gTTS(text=reply,lang="en")
 				tts.save("sreply.mp3")
-				os.system("mpg321 sreply.mp3")
+				os.system("mpg321 sreply.mp3") 
+		#to exit the python interpreter or exit the chatbot
+			else:
+				for i in range(0,length):
 
-		
+					if(stext[i]=="tata" or stext[i]=="sayonara" or stext[i]=="bye" or (stext[i]=="by" and stext[i]=="friday")):
+						print("bye")
+						bye="bye sir. happy to help you"
+						tts=gTTS(text=bye,lang="en")
+						tts.save("bye.mp3")
+						os.system("mpg321 bye.mp3")
+						os._exit(0)
 		else:
 			#to run any linux command(try simple ones like-date) 
 			for i in range(0,length):
@@ -97,16 +108,7 @@ while True:
 						tts.save('whichsong.mp3')
 						os.system("mpg321 whichsong.mp3")
 						audio1=r.listen(source)
-						try: 
-							song=r.recognize_google(audio1)	
-							#l=glob.glob('*.mp3')
-							os.system("mpg321 "+song+".mp3")				
-						except Exception as e:
-							pass	
-	except Exception as e:
-		pass
-
-'''		try:
+						try:
 							song=r.recognize_google(audio1)	
 							print("...")
 							v=requests.get("https://www.youtube.com/results?search_query="+str(song))
@@ -115,7 +117,28 @@ while True:
 							for i in s:
 								if i.get('href').count('/watch')>0:
 									ss="https://www.youtube.com"+str(i.get('href'))
-									wb.get('firefox').open_new_tab(ss)
+									video=pafy.new(ss)
+									best=video.getbest()
+									playurl=best.url
+									Instance = vlc.Instance()
+									player = Instance.media_player_new()
+									Media = Instance.media_new(playurl)
+									Media.get_mrl()
+									player.set_media(Media)
+									player.play()									
+
+									#wb.get('firefox').open_new_tab(ss)
+									#os.system("cvlc "+ss)
 									break
 						except Exception as e:
-							pass'''
+							pass
+						'''try: 
+							song=r.recognize_google(audio1)	
+							#l=glob.glob('*.mp3')
+							os.system("mpg321 "+song+".mp3")				
+						except Exception as e:
+							pass'''	
+	except Exception as e:
+		pass
+
+						
