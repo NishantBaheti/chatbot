@@ -24,8 +24,8 @@ directions=''' quick guide
 #primary message by bot
 reply="hello. The name is Friday. how can i help you"
 tts=gTTS(text=reply,lang="en")
-tts.save("sreply.mp3")
-os.system("mpg321 sreply.mp3")
+tts.save("breply.mp3")
+os.system("mpg321 breply.mp3")
 
 
 
@@ -44,11 +44,12 @@ while True:
 		length=len(stext)			
 		
 		#to greet with bot say hello or hey
-		if(text=="hello" or text=="hey"):
-			reply="hello"
-			tts=gTTS(text=reply,lang="en")
-			tts.save("sreply.mp3")
-			os.system("mpg321 sreply.mp3")
+		for i in range(0,length):
+			if(stext[i]=="hello" or stext[i]=="hey"):
+				reply="hello sir"
+				tts=gTTS(text=reply,lang="en")
+				tts.save("sreply.mp3")
+				os.system("mpg321 sreply.mp3")
 
 		
 		else:
