@@ -21,7 +21,8 @@ directions=''' quick guide
 3.to search anything on google keyword search and value,default browser firefox
 4.to create directories try a sentence specifically containing keyword="directory"
 5.to play any song on youtube use any sentence specifically containing keywords='music' or 'song', default browser firefox
-6.to end the session say a line containing specifically the keywords=bye,tata,sayonara'''
+6.to make a note simpy ask her to make a note 
+7.to end the session say a line containing specifically the keywords=bye,tata,sayonara'''
 
 #primary message by bot
 reply="hello. The name is Friday. how can i help you"
@@ -132,12 +133,63 @@ while True:
 									break
 						except Exception as e:
 							pass
-						'''try: 
-							song=r.recognize_google(audio1)	
-							#l=glob.glob('*.mp3')
-							os.system("mpg321 "+song+".mp3")				
+			
+			for i in range(0,length):
+				if(stext[i]=="note"):
+					note="1 do you want to make a new note or 2 do you want to hear the last note?"
+					print(note)					
+					tts=gTTS(text=note,lang='en')
+					tts.save("note.mp3")
+					os.system("mpg321 note.mp3")
+
+					with sr.Microphone() as source:
+						audionote=r.listen(source)
+						try:
+							note=r.recognize_google(audionote).lower()
+							print("...")
+							snote=note.split()
+							l=len(snote)
+							for i in range(0,l):
+								if(snote[i]=="new"):
+									newnote="start"
+									tts=gTTS(text=newnote,lang='en')
+									tts.save("newnote.mp3")
+									os.system("mpg321 newnote.mp3")
+								 	
+									with sr.Microphone() as source:
+										newnote=r.listen(source)
+										try:
+											new_note=r.recognize_google(newnote)
+											note_file=open("note.txt",'w+')
+											note_file.write(new_note)
+											note_file.seek(0)
+											note_file.read()
+											print("...")
+											print("done")
+										except Exception as e:
+											pass
+								if(snote[i]=="last"):
+										lastnote="playing the last note you saved"
+										tts=gTTS(text=lastnote,lang='en')
+										tts.save("lastnotenotice.mp3")
+										os.system("mpg321 lastnotenotice.mp3")
+										last_note=os.popen("cat note.txt").read()										
+										#last_note=open("note.txt",'r')
+										#last_note.seek(0)
+										#lnote=last_note.read()
+										tts=gTTS(text=last_note,lang='en')
+										tts.save("lastnote.mp3")
+										os.system("mpg321 lastnote.mp3")
 						except Exception as e:
-							pass'''	
+											pass
+					
+								#'''try: 
+									#	song=r.recognize_google(audio1)	
+										#l=glob.glob('*.mp3')
+								#		os.system("mpg321 "+song+".mp3")				
+								#	except Exception as e:
+								#		pass'''	
+	
 	except Exception as e:
 		pass
 
