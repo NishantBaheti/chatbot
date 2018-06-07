@@ -24,7 +24,7 @@ directions=''' quick guide
 4.to create directories try a sentence specifically containing keyword="directory"
 5.to play any song on youtube use any sentence specifically containing keywords='music' or 'song', default browser firefox
 6.to make a note simpy ask her to make a note 
-7.start surveillance of camera range use keyword="motion detection","keep an eye" 
+7.start surveillance of camera range use keyword="motion detection","keep an eye".It will mail the image on given gmail account if motion detected
 8.to end the session say a line containing specifically the keywords=bye,tata,sayonara'''
 
 #primary message by bot
@@ -33,6 +33,36 @@ tts=gTTS(text=reply,lang="en")
 tts.save("breply.mp3")
 os.system("mpg321 breply.mp3")
 
+def mail_image(warning_image):
+	import smtplib
+	from email.mime.text import MIMEText
+	from email.mime.multipart import MIMEMultipart
+	from email.mime.image import MIMEImage
+	from email import encoders
+	email_user="your gmail id"
+	email_send="receiver's gmail id"
+	subject= "warning!!"
+	passwd="your password"
+	img_data=open(warning_image,'rb').read()
+	msg=MIMEMultipart()
+	msg['From']=email_user
+	msg['To']=email_send
+	msg['subject']=subject
+
+	body='Intruder '
+	msg.attach(MIMEText(body,'plain'))
+	
+	text=MIMEText("Warning")
+	msg.attach(text)
+	image=MIMEImage(img_data,warning_image)
+	msg.attach(image)
+
+	text=msg.as_string()
+	server=smtplib.SMTP('smtp.gmail.com', 587)
+	server.starttls()
+	server.login(email_user,passwd)
+	server.sendmail(email_user,email_send,text)
+	server.quit()
 
 
 while True:
@@ -177,9 +207,7 @@ while True:
 										tts.save("lastnotenotice.mp3")
 										os.system("mpg321 lastnotenotice.mp3")
 										last_note=os.popen("cat note.txt").read()										
-										#last_note=open("note.txt",'r')
-										#last_note.seek(0)
-										#lnote=last_note.read()
+								
 										tts=gTTS(text=last_note,lang='en')
 										tts.save("lastnote.mp3")
 										os.system("mpg321 lastnote.mp3")
@@ -207,11 +235,7 @@ while True:
 						#creating difference between first and second
 
 						#diff1=cv2.subtract(tp1,tp2)	
-						#can also be done by numpy array subtraction
-						#cv2.imshow('nishant1',tp1)
-						#cv2.imshow('nishant2',tp2)
-						#cv2.imshow('nishant3',tp3)
-						#cv2.imshow('nishant4',tp4)
+						
 						#most accurate result by cv2
 
 						f_diff1=cv2.absdiff(newimage1,newimage2)
@@ -222,30 +246,21 @@ while True:
 						#creating a threshold to get clearer image					
 						thresh=cv2.threshold(f_diff3, 10, 255, cv2.THRESH_BINARY)[1]
 						thresh = cv2.dilate(thresh, None, iterations=2)
-						#cv2.imshow('nishant',thresh)
-						#cv2.imshow('nishant1',f_diff1)
-						#cv2.imshow('nishant2',f_diff2)
-						#print(thresh)
 						if np.array_equal(thresh,np.zeros((480,640))):
 							pass
 						else:
 							os.system("mpg321 Warning.mp3")
-							cv2.imwrite('warning.jpg',tp1)							
+							cv2.imwrite('warning.jpg',tp1)						
+							mail_image("warning.jpg")
 							#can send the image of movement to the mail of concern user 
 						if cv2.waitKey(1) & 0xff == ord('q'):
 							break
 	
-
+					
 					cv2.destroyAllWindows(0)
 					cap.release()
 					
-													#'''try: 
-									#	song=r.recognize_google(audio1)	
-										#l=glob.glob('*.mp3')
-								#		os.system("mpg321 "+song+".mp3")				
-								#	except Exception as e:
-								#		pass'''	
-	
+							
 	except Exception as e:
 		pass
 
