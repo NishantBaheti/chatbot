@@ -52,7 +52,7 @@ while True:
 		#to greet with bot say hello or hey
 		for i in range(0,length):
 			if(stext[i]=="hello" or stext[i]=="hey"):
-				reply="wish you a very happy birthday vatsal"
+				reply="hello sir"
 				tts=gTTS(text=reply,lang="en")
 				tts.save("sreply.mp3")
 				os.system("mpg321 sreply.mp3") 
