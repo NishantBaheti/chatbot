@@ -7,14 +7,25 @@ from gtts import gTTS
 import speech_recognition as sr
 #importing web browser library
 import webbrowser as wb
-#import glob
 #importing beautifulsoup 
 from bs4 import BeautifulSoup
 import numpy as np
+#importing computer vision library 
 import cv2
 import requests
 import pafy
 import vlc
+from PIL import Image
+import time
+
+#importing smtp library for accessing email to send emails
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
+from email import encoders
+
+#creating instance for speech recognition 
 r=sr.Recognizer()
 
 directions=''' quick guide
@@ -24,26 +35,22 @@ directions=''' quick guide
 4.to create directories try a sentence specifically containing keyword="directory"
 5.to play any song on youtube use any sentence specifically containing keywords='music' or 'song', default browser firefox
 6.to make a note simpy ask her to make a note 
-7.start surveillance of camera range use keyword="motion detection","keep an eye".It will mail the image on given gmail account if motion detected
+7.start surveillance of camera range use keyword="motion detection","keep an eye" 
 8.to end the session say a line containing specifically the keywords=bye,tata,sayonara'''
 
 #primary message by bot
-reply="hello. The name is Friday. how can i help you"
+reply="hello everyone. The name is Friday."
 tts=gTTS(text=reply,lang="en")
 tts.save("breply.mp3")
 os.system("mpg321 breply.mp3")
 
 def mail_image(warning_image):
-	import smtplib
-	from email.mime.text import MIMEText
-	from email.mime.multipart import MIMEMultipart
-	from email.mime.image import MIMEImage
-	from email import encoders
-	email_user="your gmail id"
-	email_send="receiver's gmail id"
-	subject= "warning!!"
-	passwd="your password"
-	img_data=open(warning_image,'rb').read()
+	
+	email_user="nb9461416717@gmail.com"
+	email_send="nb9461416717@gmail.com"
+	subject= "warning!! Motion Detected"
+	passwd="nishant@1234"
+	#img_data=open(warning_image,'rb').read()
 	msg=MIMEMultipart()
 	msg['From']=email_user
 	msg['To']=email_send
@@ -54,8 +61,9 @@ def mail_image(warning_image):
 	
 	text=MIMEText("Warning")
 	msg.attach(text)
-	image=MIMEImage(img_data,warning_image)
-	msg.attach(image)
+	with open(warning_image,'rb') as fp:
+		image=MIMEImage(fp.read())
+		msg.attach(image)
 
 	text=msg.as_string()
 	server=smtplib.SMTP('smtp.gmail.com', 587)
@@ -82,7 +90,7 @@ while True:
 		#to greet with bot say hello or hey
 		for i in range(0,length):
 			if(stext[i]=="hello" or stext[i]=="hey"):
-				reply="hello sir"
+				reply="hello nishant"
 				tts=gTTS(text=reply,lang="en")
 				tts.save("sreply.mp3")
 				os.system("mpg321 sreply.mp3") 
@@ -92,7 +100,7 @@ while True:
 
 					if(stext[i]=="tata" or stext[i]=="sayonara" or stext[i]=="bye" or (stext[i]=="by" and stext[i]=="friday")):
 						print("bye")
-						bye="bye sir. happy to help you"
+						bye="bye nishant. happy to help you"
 						tts=gTTS(text=bye,lang="en")
 						tts.save("bye.mp3")
 						os.system("mpg321 bye.mp3")
@@ -160,7 +168,9 @@ while True:
 									Media = Instance.media_new(playurl)
 									Media.get_mrl()
 									player.set_media(Media)
-									player.play()							
+									player.play()
+									if 0xff == ord('q'):
+										player.release()						
 
 									#wb.get('firefox').open_new_tab(ss)
 									#os.system("cvlc "+str(ss))
@@ -170,7 +180,7 @@ while True:
 			
 			for i in range(0,length):
 				if(stext[i]=="note"):
-					note="1 do you want to make a new note or 2 do you want to hear the last note?"
+					note="1 do you want to make a new note or do you want to hear the last note?"
 					print(note)					
 					tts=gTTS(text=note,lang='en')
 					tts.save("note.mp3")
@@ -207,7 +217,9 @@ while True:
 										tts.save("lastnotenotice.mp3")
 										os.system("mpg321 lastnotenotice.mp3")
 										last_note=os.popen("cat note.txt").read()										
-								
+										#last_note=open("note.txt",'r')
+										#last_note.seek(0)
+										#lnote=last_note.read()
 										tts=gTTS(text=last_note,lang='en')
 										tts.save("lastnote.mp3")
 										os.system("mpg321 lastnote.mp3")
@@ -217,11 +229,11 @@ while True:
 				if(stext[i]=="keep" or stext[i]=="eye" or stext[i]=="motion"):
 					cap=cv2.VideoCapture(0)
 					#taking pic 1
-					tts=gTTS(text="warning! Security breach",lang='en')
-					tts1=gTTS(text="I am on it",lang='en')
-					tts.save("on.mp3")
-					os.system("mpg321 on.mp3")
-					tts.save("Warning.mp3")
+					#tts=gTTS(text="warning! Security breach",lang='en')
+					#tts1=gTTS(text="I am on it",lang='en')
+					#tts.save("on.mp3")
+					#os.system("mpg321 on.mp3")
+					print("Motion Detection start")
 					while cap.isOpened():
 						tp1=cap.read()[1]
 						tp2=cap.read()[1]
@@ -235,30 +247,43 @@ while True:
 						#creating difference between first and second
 
 						#diff1=cv2.subtract(tp1,tp2)	
-						
+						#can also be done by numpy array subtraction
+						#cv2.imshow('nishant1',tp1)
+						#cv2.imshow('nishant2',tp2)
+						#cv2.imshow('nishant3',tp3)
+						#cv2.imshow('nishant4',tp4)
 						#most accurate result by cv2
 
 						f_diff1=cv2.absdiff(newimage1,newimage2)
 						f_diff2=cv2.absdiff(newimage2,newimage3)
 						f_diff3=cv2.bitwise_and(f_diff1,f_diff2)
 						#cv2.imshow('nishant',f_diff3)
-						cv2.imshow('nishant1',tp1)
+						#cv2.imshow('nishant1',tp1)
 						#creating a threshold to get clearer image					
 						thresh=cv2.threshold(f_diff3, 10, 255, cv2.THRESH_BINARY)[1]
 						thresh = cv2.dilate(thresh, None, iterations=2)
+						cv2.imshow('MotionDetection',thresh)
+						#cv2.imshow('nishant1',f_diff1)
+						#cv2.imshow('nishant2',f_diff2)
+						#print(thresh)
 						if np.array_equal(thresh,np.zeros((480,640))):
 							pass
 						else:
-							os.system("mpg321 Warning.mp3")
-							cv2.imwrite('warning.jpg',tp1)						
-							mail_image("warning.jpg")
+							#os.system("mpg321 Warning.mp3")
+							cv2.imwrite('warning.png',tp3)
+							im=Image.open("warning.png")
+							im.save("warning.png")
+							mail_image("warning.png")						
+							
 							#can send the image of movement to the mail of concern user 
 						if cv2.waitKey(1) & 0xff == ord('q'):
+							cv2.destroyWindow('MotionDetection')
+							cap.release()
 							break
+							
 	
+					#mail_image('warning.png')
 					
-					cv2.destroyAllWindows(0)
-					cap.release()
 					
 							
 	except Exception as e:
