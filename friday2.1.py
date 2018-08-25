@@ -46,10 +46,10 @@ os.system("mpg321 breply.mp3")
 
 def mail_image(warning_image):
 	
-	email_user="nb9461416717@gmail.com"
-	email_send="nb9461416717@gmail.com"
+	email_user="......................."
+	email_send="......................."
 	subject= "warning!! Motion Detected"
-	passwd="nishant@1234"
+	passwd="............."
 	#img_data=open(warning_image,'rb').read()
 	msg=MIMEMultipart()
 	msg['From']=email_user
